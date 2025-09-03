@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OKpay - Hive Point of Sale</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta name="description" content="OKpay - Simple Hive blockchain point of sale" />
+</head>
+<body>
+  <header class="top-bar">
+    <nav class="nav-bar">
+      <div class="brand" aria-label="OKpay">
+        <img src="assets/applogo.webp" alt="OKpay" class="brand-logo" />
+      </div>
+      <div class="nav-actions">
+        <a href="qr.html" class="link-qr">QR Generator</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="pay-section" class="card">
+      <div id="account-visual" class="account-visual hidden">
+        <img id="account-avatar" alt="Account avatar" />
+        <div id="account-name"></div>
+      </div>
+
+      <form id="payment-form" autocomplete="off">
+        <label class="field">
+          <span>Receiving Account</span>
+          <input type="text" id="receivingAccount" name="receivingAccount" placeholder="hiveaccount" required />
+        </label>
+  <div id="accountStatus" class="account-status" aria-live="polite"></div>
+
+        <label class="field">
+          <span>Amount (USD)</span>
+          <input type="number" id="amountUsd" name="amountUsd" min="0" step="0.01" placeholder="0.00" required />
+        </label>
+
+        <div class="memo-display">
+          <span class="memo-label">Memo (auto):</span>
+          <code id="memoValue">...</code>
+        </div>
+
+        <button type="submit" id="payBtn" class="primary" disabled>Pay with Keychain</button>
+      </form>
+
+      <p class="hint">Enter an account to fetch its avatar. Amount converts to HBD at current rate (TODO: implement rate fetch).</p>
+    </section>
+  </main>
+
+  <footer class="footer">OKpay &copy; <span id="year"></span> • Built on Hive</footer>
+
+  <script type="module" src="src/js/main.js"></script>
+</body>
+</html>

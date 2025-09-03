@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OKpay - QR Generator</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <nav class="nav-bar">
+      <div class="brand" aria-label="OKpay QR">
+        <img src="assets/applogo.webp" alt="OKpay" class="brand-logo" />
+      </div>
+      <div class="nav-actions">
+        <a href="index.html" class="link-home">Back to Pay</a>
+      </div>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="card">
+      <div id="qrAccountVisual" class="account-visual hidden">
+        <img id="qrAccountAvatar" alt="Account avatar" />
+        <div id="qrAccountName"></div>
+      </div>
+
+      <form id="qrForm">
+        <label class="field">
+          <span>Receiving Account</span>
+          <input type="text" id="qrReceivingAccount" required placeholder="merchantname" />
+        </label>
+        <div id="qrAccountStatus" class="account-status" aria-live="polite"></div>
+
+        <button class="primary" type="submit">Generate QR</button>
+      </form>
+
+      <div id="qrResult" class="qr-result hidden">
+        <canvas id="qrCanvas"></canvas>
+        <p class="qr-link"><a id="qrLink" href="#" target="_blank" rel="noopener">Payment Link</a></p>
+        <button id="downloadQr" class="secondary">Download PNG</button>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">OKpay &copy; <span id="year"></span></footer>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" integrity="sha384-uB+suVJeFt3Pc5kyticNhumC3jm5JYALzVhH66lmpKoMZH1Qi8LJoKJYHWEb3N5a" crossorigin="anonymous"></script>
+  <script type="module" src="src/js/qr.js"></script>
+</body>
+</html>
