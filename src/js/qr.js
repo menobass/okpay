@@ -48,12 +48,9 @@ async function handleAccountChange() {
 
 receivingInput.addEventListener('input', debounce(() => { handleAccountChange(); }, 300));
 
-function buildPaymentUrl({ to, amount }) {
-  const base = (location.protocol.startsWith('http') ? location.origin : 'http://localhost:8000');
-  const path = location.pathname.replace('qr.html', 'index.html');
-  const url = new URL(path, base);
-  if (to) url.searchParams.set('to', to);
-  if (amount) url.searchParams.set('amount', amount);
+function buildPaymentUrl({ to }) {
+  const url = new URL('http://menobass.github.io/okpay');
+  if (to) url.searchParams.set('vendor', to);
   return url.toString();
 }
 

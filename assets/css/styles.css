@@ -49,6 +49,7 @@ button.secondary:hover { background:#314150; }
 .qr-result { margin-top:1.5rem; text-align:center; }
 .qr-result.hidden { display:none; }
 .qr-link { margin:.75rem 0; font-size:.8rem; }
+.qr-hint { font-size:.7rem; color:var(--muted); margin-top:.75rem; font-style:italic; }
 @media (max-width:540px){
   .container { margin:1.25rem auto 1.5rem; }
   .app-name { font-size:1.05rem; }

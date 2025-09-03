@@ -23,6 +23,10 @@ async function init() {
   memoEl.textContent = memo;
   hbdRate = await fetchHbdRate();
   const q = parseQuery();
+  if (q.vendor) {
+    receivingInput.value = sanitizeAccount(q.vendor);
+    handleAccountChange();
+  }
   if (q.to) {
     receivingInput.value = sanitizeAccount(q.to);
     handleAccountChange();
