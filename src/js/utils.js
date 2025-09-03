@@ -6,8 +6,10 @@ export function parseQuery() {
 }
 
 export function generateUniqueMemo() {
-  // Simple unique memo: okpay-<timestamp>-<rand>
-  return `okpay-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  // Generate memo in format: kcs-hpos-xxxx-xxxx (8 random digits total)
+  const part1 = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const part2 = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `kcs-hpos-${part1}-${part2}`;
 }
 
 export function debounce(fn, delay = 350) {
