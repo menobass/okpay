@@ -1,4 +1,4 @@
-import { parseQuery, generateUniqueMemo, debounce, sanitizeAccount, setYear, fetchHiveAccountAvatar, fetchHbdRate, usdToHbd, buildKeychainTransfer, fallbackHiveSigner, validateHiveAccount } from './utils.js';
+import { parseQuery, generateUniqueMemo, debounce, sanitizeAccount, setYear, fetchHiveAccountAvatar, usdToHbd, buildKeychainTransfer, fallbackHiveSigner, validateHiveAccount } from './utils.js';
 
 const form = document.getElementById('payment-form');
 const receivingInput = document.getElementById('receivingAccount');
@@ -16,12 +16,10 @@ if (!memo) {
   memo = generateUniqueMemo();
   sessionStorage.setItem('okpay_memo', memo);
 }
-let hbdRate = 1; // placeholder
 
 async function init() {
   setYear(document.getElementById('year'));
   memoEl.textContent = memo;
-  hbdRate = await fetchHbdRate();
   const q = parseQuery();
   if (q.vendor) {
     receivingInput.value = sanitizeAccount(q.vendor);
@@ -82,8 +80,7 @@ form.addEventListener('submit', (e) => {
   if (payBtn.disabled) return;
   const to = sanitizeAccount(receivingInput.value);
   const amountUsd = parseFloat(amountInput.value);
-  const hbd = usdToHbd(amountUsd, hbdRate);
-  const amountHBD = hbd; // currently 1:1 placeholder
+  const amountHBD = usdToHbd(amountUsd); // 1:1 conversion
 
   const transferLink = buildKeychainTransfer({ to, amountHBD, memo });
 

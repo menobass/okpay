@@ -74,12 +74,7 @@ export async function validateHiveAccount(name) {
   return { valid: true, account: accounts[0] };
 }
 
-export function usdToHbd(amountUsd, rateHbdPerUsd) {
-  if (!rateHbdPerUsd || rateHbdPerUsd <= 0) return 0;
-  return amountUsd * rateHbdPerUsd;
-}
-
-export async function fetchHbdRate() {
-  // TODO: implement real rate fetch (maybe coingecko). Placeholder static 1:1
-  return 1; // HBD typically ~1 USD peg but may deviate.
+export function usdToHbd(amountUsd) {
+  // 1 USD = 1 HBD (simplified for commerce)
+  return amountUsd;
 }
