@@ -82,19 +82,29 @@ form.addEventListener('submit', (e) => {
   const amountUsd = parseFloat(amountInput.value);
   const amountHBD = usdToHbd(amountUsd); // 1:1 conversion
 
-  const transferLink = buildKeychainTransfer({ to, amountHBD, memo });
+  const transfer = buildKeychainTransfer({ to, amountHBD, memo });
 
-  // Attempt opening keychain deep link, fallback after short timeout
-  let navigated = false;
-  const timer = setTimeout(() => {
-    if (!navigated) {
-      window.location.href = fallbackHiveSigner({ to, amountHBD, memo });
-    }
-  }, 1200);
+  if (transfer.method === 'extension') {
+    // Use Keychain extension API
+    window.hive_keychain.requestTransfer(null, to, amountHBD.toFixed(3), memo, 'HBD', (response) => {
+      if (response.success) {
+        alert('Payment successful!');
+      } else {
+        alert('Payment failed: ' + response.message);
+      }
+    });
+  } else {
+    // Fallback to deep link + HiveSigner
+    let navigated = false;
+    const timer = setTimeout(() => {
+      if (!navigated) {
+        window.location.href = fallbackHiveSigner({ to, amountHBD, memo });
+      }
+    }, 1200);
 
-  // Try open keychain
-  window.location.href = transferLink;
-  navigated = true; // if keychain protocol handled this won't run fallback
+    window.location.href = transfer.url;
+    navigated = true;
+  }
 });
 
 init();

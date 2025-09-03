@@ -26,14 +26,14 @@ export function setYear(el) {
 }
 
 export function buildKeychainTransfer({ to, amountHBD, memo }) {
-  // Hive Keychain link (uses keychain:// or https fallback). Amount must have 3 decimals.
+  // Try Keychain extension API first, fallback to deep link
+  if (window.hive_keychain) {
+    return { method: 'extension', to, amountHBD, memo };
+  }
+  // Fallback deep link (may not work in all browsers)
   const amountStr = Number(amountHBD).toFixed(3) + ' HBD';
   const op = encodeURIComponent(JSON.stringify(["transfer", { from: "<FROM>", to, amount: amountStr, memo }]));
-  // NOTE: <FROM> replaced by Keychain extension automatically when using requestHandshake, but for deep link we can't know.
-  // We'll use a redirect that allows user to pick inside Keychain.
-  // Keychain deep link pattern example (subject to change):
-  // keychain://requestBroadcast?operations=[[...]]
-  return `keychain://requestBroadcast?operations=${op}`;
+  return { method: 'deeplink', url: `keychain://requestBroadcast?operations=${op}` };
 }
 
 export function fallbackHiveSigner({ to, amountHBD, memo }) {
