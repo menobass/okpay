@@ -20,8 +20,8 @@ Visit: [menobass.github.io/okpay](https://menobass.github.io/okpay)
 ## ✨ Features
 
 - **Account Validation** - Real-time verification of Hive account names with avatar preview
-- **Unique Transaction Memos** - Each session generates a unique memo (`kcs-hpos-xxxx-xxxx`) for payment tracking
-- **Multiple Payment Methods** - Supports Hive Keychain extension and HiveSigner web wallet
+- **Unique Transaction Memos** - Each session generates a unique memo (`kcs-hpos-xxxx-xxxx`) for payment tracking (works with @distriator out of the box)
+- **Multiple Payment Methods** - Designed to work with Hive Keychain Mobile Wallet (In wallet browser)
 - **QR Code Generation** - Create printable QR codes that pre-fill payment forms
 - **Print-Ready QR Codes** - Clean, professional print layout for business use
 - **Mobile Responsive** - Works seamlessly on phones, tablets, and desktops
@@ -33,7 +33,7 @@ Visit: [menobass.github.io/okpay](https://menobass.github.io/okpay)
 1. Customer scans QR: `menobass.github.io/okpay?vendor=merchantname`
 2. Payment page loads with merchant account pre-filled
 3. Customer enters amount (treated as USD but paid in HBD)
-4. Unique memo generated for transaction tracking
+4. Unique memo generated for transaction tracking (distriastor requirement)
 5. Payment submitted via Keychain API or deep link fallback
 
 ### Memo Format
@@ -41,7 +41,7 @@ Memos follow the pattern: `kcs-hpos-1234-5678` (8 random digits)
 
 ### Supported Wallets
 - **Hive Keychain** (Browser extension - preferred)
-- **HiveSigner** (Web-based fallback)
+
 
 ## 🛠 For Developers
 
