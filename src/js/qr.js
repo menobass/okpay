@@ -1,4 +1,4 @@
-import { generateUniqueMemo, sanitizeAccount, setYear, validateHiveAccount, fetchHiveAccountAvatar, debounce } from './utils.js';
+import { generateUniqueMemo, sanitizeAccount, setYear, validateHiveAccount, fetchHiveAccountAvatar, debounce, SUPPORTED_CURRENCIES } from './utils.js';
 
 const form = document.getElementById('qrForm');
 const result = document.getElementById('qrResult');
@@ -7,6 +7,7 @@ const linkEl = document.getElementById('qrLink');
 const downloadBtn = document.getElementById('downloadQr');
 const printBtn = document.getElementById('printQr');
 const receivingInput = document.getElementById('qrReceivingAccount');
+const currencySelect = document.getElementById('qrCurrency');
 const avatarImg = document.getElementById('qrAccountAvatar');
 const accountNameEl = document.getElementById('qrAccountName');
 const accountVisual = document.getElementById('qrAccountVisual');
@@ -49,16 +50,18 @@ async function handleAccountChange() {
 
 receivingInput.addEventListener('input', debounce(() => { handleAccountChange(); }, 300));
 
-function buildPaymentUrl({ to }) {
+function buildPaymentUrl({ to, currency = 'USD' }) {
   const url = new URL('http://menobass.github.io/okpay');
   if (to) url.searchParams.set('vendor', to);
+  if (currency && currency !== 'USD') url.searchParams.set('cur', currency);
   return url.toString();
 }
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const to = sanitizeAccount(receivingInput.value);
-  const paymentUrl = buildPaymentUrl({ to });
+  const currency = currencySelect.value;
+  const paymentUrl = buildPaymentUrl({ to, currency });
   ensureQrInstance().value = paymentUrl;
   linkEl.href = paymentUrl;
   linkEl.textContent = paymentUrl;

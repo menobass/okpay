@@ -1,8 +1,12 @@
-import { parseQuery, generateUniqueMemo, debounce, sanitizeAccount, setYear, fetchHiveAccountAvatar, usdToHbd, buildKeychainTransfer, fallbackHiveSigner, validateHiveAccount } from './utils.js';
+import { parseQuery, generateUniqueMemo, debounce, sanitizeAccount, setYear, fetchHiveAccountAvatar, usdToHbd, buildKeychainTransfer, fallbackHiveSigner, validateHiveAccount, SUPPORTED_CURRENCIES, fetchExchangeRates, convertCurrency, validateCurrency } from './utils.js';
 
 const form = document.getElementById('payment-form');
 const receivingInput = document.getElementById('receivingAccount');
 const amountInput = document.getElementById('amountUsd');
+const amountLocalInput = document.getElementById('amountLocal');
+const localCurrencyField = document.getElementById('localCurrencyField');
+const localCurrencyLabel = document.getElementById('localCurrencyLabel');
+const currencyError = document.getElementById('currencyError');
 const payBtn = document.getElementById('payBtn');
 const memoEl = document.getElementById('memoValue');
 const avatarImg = document.getElementById('account-avatar');
@@ -17,10 +21,23 @@ if (!memo) {
   sessionStorage.setItem('okpay_memo', memo);
 }
 
+// Currency conversion state
+let currentCurrency = 'USD';
+let exchangeRates = null;
+
 async function init() {
   setYear(document.getElementById('year'));
   memoEl.textContent = memo;
+  
   const q = parseQuery();
+  
+  // Handle currency parameter
+  if (q.cur && validateCurrency(q.cur)) {
+    currentCurrency = q.cur.toUpperCase();
+    await setupCurrencyConversion();
+  }
+  
+  // Handle vendor/account parameter
   if (q.vendor) {
     receivingInput.value = sanitizeAccount(q.vendor);
     handleAccountChange();
@@ -30,15 +47,88 @@ async function init() {
     handleAccountChange();
   }
   if (q.amount) {
-    amountInput.value = q.amount;
+    if (currentCurrency === 'USD') {
+      amountInput.value = q.amount;
+    } else {
+      amountLocalInput.value = q.amount;
+      convertLocalToUsd();
+    }
   }
   validate();
 }
 
+async function setupCurrencyConversion() {
+  if (currentCurrency === 'USD') return;
+  
+  try {
+    exchangeRates = await fetchExchangeRates();
+    if (exchangeRates) {
+      // Show local currency field
+      const currency = SUPPORTED_CURRENCIES[currentCurrency];
+      localCurrencyLabel.textContent = `Amount (${currency.code})`;
+      localCurrencyField.style.display = 'block';
+      
+      // Make local currency field required, USD field secondary
+      amountLocalInput.required = true;
+      amountInput.required = false;
+      amountInput.style.opacity = '0.7';
+      
+      currencyError.classList.add('hidden');
+    } else {
+      showCurrencyError();
+    }
+  } catch (error) {
+    showCurrencyError();
+  }
+}
+
+function showCurrencyError() {
+  currencyError.classList.remove('hidden');
+  currentCurrency = 'USD';
+  exchangeRates = null;
+}
+
+function convertLocalToUsd() {
+  if (!exchangeRates || currentCurrency === 'USD') return;
+  
+  const localAmount = parseFloat(amountLocalInput.value);
+  if (isNaN(localAmount) || localAmount <= 0) {
+    amountInput.value = '';
+    return;
+  }
+  
+  const usdAmount = convertCurrency(localAmount, currentCurrency, 'USD', exchangeRates);
+  if (usdAmount !== null) {
+    amountInput.value = usdAmount.toFixed(2);
+  }
+}
+
+function convertUsdToLocal() {
+  if (!exchangeRates || currentCurrency === 'USD') return;
+  
+  const usdAmount = parseFloat(amountInput.value);
+  if (isNaN(usdAmount) || usdAmount <= 0) {
+    amountLocalInput.value = '';
+    return;
+  }
+  
+  const localAmount = convertCurrency(usdAmount, 'USD', currentCurrency, exchangeRates);
+  if (localAmount !== null) {
+    amountLocalInput.value = localAmount.toFixed(2);
+  }
+}
+
 function validate() {
   const acct = sanitizeAccount(receivingInput.value);
-  const amt = parseFloat(amountInput.value);
   const isValidState = accountStatus && accountStatus.classList.contains('ok');
+  
+  let amt;
+  if (currentCurrency === 'USD') {
+    amt = parseFloat(amountInput.value);
+  } else {
+    amt = parseFloat(amountLocalInput.value);
+  }
+  
   const ok = isValidState && acct.length >= 3 && !isNaN(amt) && amt > 0;
   payBtn.disabled = !ok;
 }
@@ -72,7 +162,14 @@ async function handleAccountChange() {
 }
 
 receivingInput.addEventListener('input', debounce(() => { handleAccountChange(); validate(); }, 300));
-amountInput.addEventListener('input', () => validate());
+amountInput.addEventListener('input', () => { 
+  if (currentCurrency !== 'USD') convertUsdToLocal();
+  validate(); 
+});
+amountLocalInput.addEventListener('input', () => { 
+  convertLocalToUsd(); 
+  validate(); 
+});
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();

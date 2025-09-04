@@ -1,0 +1,25 @@
+# Build files
+node_modules/
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# Development notes
+implementation_plan.txt
+notes.txt
+todo.txt
+dev_notes.md

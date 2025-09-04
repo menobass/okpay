@@ -1,5 +1,20 @@
 // Utility functions for OKpay
 
+// Supported currencies
+export const SUPPORTED_CURRENCIES = {
+  USD: { code: 'USD', name: 'US Dollar', symbol: '$' },
+  EUR: { code: 'EUR', name: 'Euro', symbol: '€' },
+  GBP: { code: 'GBP', name: 'British Pound', symbol: '£' },
+  CAD: { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+  AUD: { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+  ARS: { code: 'ARS', name: 'Argentine Peso', symbol: '$' },
+  MXN: { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+  COP: { code: 'COP', name: 'Colombian Peso', symbol: '$' },
+  BRL: { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+  NGN: { code: 'NGN', name: 'Nigerian Naira', symbol: '₦' },
+  GTQ: { code: 'GTQ', name: 'Guatemalan Quetzal', symbol: 'Q' }
+};
+
 export function parseQuery() {
   const params = new URLSearchParams(window.location.search);
   return Object.fromEntries(params.entries());
@@ -77,4 +92,73 @@ export async function validateHiveAccount(name) {
 export function usdToHbd(amountUsd) {
   // 1 USD = 1 HBD (simplified for commerce)
   return amountUsd;
+}
+
+// Currency conversion functions
+export async function fetchExchangeRates() {
+  const cacheKey = 'okpay_rates_' + new Date().toDateString();
+  
+  // Check cache first
+  const cached = getCachedRates(cacheKey);
+  if (cached) return cached;
+  
+  try {
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    if (!response.ok) throw new Error('Rate fetch failed');
+    
+    const data = await response.json();
+    const rates = data.rates;
+    
+    // Cache the rates
+    setCachedRates(cacheKey, rates);
+    return rates;
+  } catch (error) {
+    console.warn('Currency API failed:', error);
+    // Try to use yesterday's cache as fallback
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const fallbackKey = 'okpay_rates_' + yesterday.toDateString();
+    return getCachedRates(fallbackKey) || null;
+  }
+}
+
+export function getCachedRates(cacheKey) {
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    return cached ? JSON.parse(cached) : null;
+  } catch (error) {
+    console.warn('Cache read failed:', error);
+    return null;
+  }
+}
+
+export function setCachedRates(cacheKey, rates) {
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(rates));
+  } catch (error) {
+    console.warn('Cache write failed:', error);
+  }
+}
+
+export function convertCurrency(amount, fromCurrency, toCurrency, rates) {
+  if (!rates || !amount || fromCurrency === toCurrency) return amount;
+  
+  // Convert to USD first if needed
+  let usdAmount = amount;
+  if (fromCurrency !== 'USD') {
+    const fromRate = rates[fromCurrency];
+    if (!fromRate) return null;
+    usdAmount = amount / fromRate;
+  }
+  
+  // Convert from USD to target currency
+  if (toCurrency === 'USD') return usdAmount;
+  const toRate = rates[toCurrency];
+  if (!toRate) return null;
+  
+  return usdAmount * toRate;
+}
+
+export function validateCurrency(currencyCode) {
+  return currencyCode && SUPPORTED_CURRENCIES[currencyCode.toUpperCase()];
 }
