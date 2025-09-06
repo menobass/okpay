@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OKpay - QR Generator</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" type="image/png" href="assets/okpayicon.png" />
 </head>
 <body>
   <header class="top-bar">
     <nav class="nav-bar">
       <div class="brand" aria-label="OKpay QR">
-        <img src="assets/applogo.webp" alt="OKpay" class="brand-logo" />
-      </div>
-      <div class="nav-actions">
-        <a href="index.html" class="link-home">Back to Pay</a>
+        <img src="assets/okpaylogo.png" alt="OKpay" class="brand-logo" />
       </div>
     </nav>
   </header>
@@ -63,7 +61,15 @@
       </div>
     </section>
   </main>
-  <footer class="footer">OKpay &copy; <span id="year"></span></footer>
+  
+  <div class="bottom-links">
+    <a href="index.html">Back to Pay</a>
+  </div>
+  
+  <footer class="footer">
+    Built with love by @meno and @ankapolo<br>
+    OKpay &copy; <span id="year"></span>
+  </footer>
   <script src="https://unpkg.com/qrious@4.0.2/dist/qrious.min.js"></script>
   <script type="module" src="src/js/qr.js"></script>
 </body>
