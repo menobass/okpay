@@ -51,7 +51,7 @@ async function handleAccountChange() {
 receivingInput.addEventListener('input', debounce(() => { handleAccountChange(); }, 300));
 
 function buildPaymentUrl({ to, currency = 'USD' }) {
-  const url = new URL('http://menobass.github.io/okpay');
+  const url = new URL('https://menobass.github.io/okpay');
   if (to) url.searchParams.set('vendor', to);
   if (currency && currency !== 'USD') url.searchParams.set('cur', currency);
   return url.toString();
